@@ -7,6 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 )
 
 // New creates a new blob store using the default configuration.
@@ -37,6 +38,7 @@ func (s Store) Put(ctx context.Context, key string, r io.Reader) (err error) {
 		Bucket: &s.bucketName,
 		Key:    &key,
 		Body:   r,
+		ACL:    types.ObjectCannedACL(types.ObjectCannedACLBucketOwnerFullControl),
 	})
 	return
 }
