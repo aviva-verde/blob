@@ -52,3 +52,22 @@ func (s Store) Get(ctx context.Context, key string) (r io.ReadCloser, err error)
 	}
 	return goo.Body, err
 }
+
+// List keys in the bucket.
+func (s Store) List(ctx context.Context, prefix string) (keys []string, err error) {
+	pager := s3.NewListObjectsV2Paginator(s.client, &s3.ListObjectsV2Input{
+		Bucket: &s.bucketName,
+		Prefix: aws.String(prefix),
+	})
+	for pager.HasMorePages() {
+		page, err := pager.NextPage(ctx)
+		if err != nil {
+			return keys, err
+		}
+		for _, obj := range page.Contents {
+			key := *obj.Key
+			keys = append(keys, key)
+		}
+	}
+	return
+}
